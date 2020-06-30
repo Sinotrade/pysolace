@@ -5,7 +5,7 @@ on:
     tags:
       - "*"
 
-job:
+jobs:
   fetch:
     runs-on: macos-latest
     strategy:
