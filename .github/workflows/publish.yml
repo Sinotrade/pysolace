@@ -18,4 +18,4 @@ jobs:
           repository: 'Yvictor/pysolace'
           ref: 0.9.5
           token: ${{ secrets.PYSOLACE_GITHUB_TOKEN }}
-      - run: ls -alh
+      - run: ls -alh && echo ${GITHUB_REF#refs/*/}
