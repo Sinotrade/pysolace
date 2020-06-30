@@ -13,9 +13,12 @@ jobs:
         python-version: [3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v2
+      - name: set git tag env var
+        run: echo ::set-env name=GIT_TAG::${GITHUB_REF#refs/*/}
+      - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
           repository: 'Yvictor/pysolace'
-          ref: ${{ GITHUB_REF#refs/*/ }}
+          ref: ${{ env.GIT_TAG }}
           token: ${{ secrets.PYSOLACE_GITHUB_TOKEN }}
       - run: ls -alh && echo ${GITHUB_REF#refs/*/}
