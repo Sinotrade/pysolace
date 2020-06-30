@@ -16,6 +16,6 @@ jobs:
         with:
           submodules: 'recursive'
           repository: 'Yvictor/pysolace'
-          ref: 0.9.5
+          ref: ${GITHUB_REF#refs/*/}
           token: ${{ secrets.PYSOLACE_GITHUB_TOKEN }}
       - run: ls -alh && echo ${GITHUB_REF#refs/*/}
