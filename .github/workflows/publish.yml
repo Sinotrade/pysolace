@@ -1,0 +1,21 @@
+name: MacOS pysolace
+
+on: 
+  push:
+    tags:
+      - "*"
+
+job:
+  fetch:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          repository: 'Yvictor/pysolace'
+          ref: ${GITHUB_REF#refs/*/}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: ls -alh
