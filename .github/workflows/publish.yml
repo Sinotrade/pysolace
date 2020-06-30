@@ -6,18 +6,44 @@ on:
       - "*"
 
 jobs:
-  fetch:
+  publish:
     runs-on: macos-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
     steps:
       - name: set git tag env var
-        run: echo ::set-env name=GIT_TAG::${GITHUB_REF#refs/*/}
+        run: echo ::set-env name=CI_COMMIT_TAG::${GITHUB_REF#refs/*/}
       - uses: actions/checkout@v2
         with:
           submodules: 'recursive'
           repository: 'Yvictor/pysolace'
-          ref: ${{ env.GIT_TAG }}
+          ref: ${{ env.CI_COMMIT_TAG }}
           token: ${{ secrets.PYSOLACE_GITHUB_TOKEN }}
-      - run: ls -alh && echo ${GITHUB_REF#refs/*/}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install pipenv wheel twine
+        run: pip install pipenv wheel twine
+      - name: fix pipenv python version 
+        run: pipenv --python ${{ matrix.python-version }} 
+      - name: sync dev env
+        run: pipenv install --dev
+      - name: sync env
+        run: pipenv install
+      - name: setup build
+        run: pipenv run python setup.py build_ext
+      - name: build wheel
+        run: pipenv run pip wheel ./ --no-deps -w wheelhouse/
+      - name: upload wheel to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: pysolace
+          path: wheelhouse/pysolace*.whl
+      - name: Build and publish
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: twine upload wheelhouse/pysolace*.whl
+  
