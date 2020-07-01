@@ -12,7 +12,7 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8]
     steps:
-      - name: set git tag env var
+      - name: Set CI_COMMIT_TAG Env
         run: echo ::set-env name=CI_COMMIT_TAG::${GITHUB_REF#refs/*/}
       - uses: actions/checkout@v2
         with:
@@ -24,19 +24,19 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: install pipenv wheel twine
+      - name: Install pipenv wheel twine
         run: pip install pipenv wheel twine
-      - name: fix pipenv python version 
+      - name: Fixed pipenv python version 
         run: pipenv --python ${{ matrix.python-version }} 
-      - name: sync dev env
+      - name: Sync dev env
         run: pipenv install --dev
-      - name: sync env
+      - name: Sync env
         run: pipenv install
-      - name: setup build
+      - name: Setup build
         run: pipenv run python setup.py build_ext
-      - name: build wheel
+      - name: Build wheel
         run: pipenv run pip wheel ./ --no-deps -w wheelhouse/
-      - name: upload wheel to artifacts
+      - name: Upload wheel to artifacts
         uses: actions/upload-artifact@v2
         with:
           name: pysolace
